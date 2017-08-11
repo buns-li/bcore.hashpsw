@@ -1,0 +1,32 @@
+{
+    "name": "bcore.hashpsw",
+    "version": "1.0.0",
+    "description": "a password crypt mini-server of bcore",
+    "main": "index.js",
+    "scripts": {
+        "test": "node test/test.js"
+    },
+    "keywords": [
+        "bcore", "hash", "password"
+    ],
+    "author": {
+        "name": "buns_zpli",
+        "email": "zpli_buns@126.com",
+        "url": "https://github.com/buns-li"
+    },
+    "engines": {
+        "node": ">=7.10.0"
+    },
+    "license": "Aapache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/buns-li/bcore.hashpsw.git"
+    },
+    "bugs": {
+        "url": "https://github.com/buns-li/bcore.hashpsw/issues"
+    },
+    "homepage": "https://github.com/buns-li/bcore.hashpsw#readme",
+    "dependencies": {
+        "bcrypt": "^1.0.2"
+    }
+}
