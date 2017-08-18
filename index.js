@@ -4,18 +4,16 @@ const bcore = require('bcore')
 
 const bcrypt = require('bcrypt')
 
+const aesKeySymbol = Symbol['hashpsw#aesKey']
+
 bcore.on('hashpsw', {
-    saltRounds: 10,
-    saltHandler: function () {},
     aesKey: 'bcore.hash_psw'
-}, function () {
+}, function() {
 
     //密码加密算法
 
-    this.__init = function (options) {
-
-        this.saltRounds = options.saltRounds || 10
-        this.aesKey = options.aesKey
+    this.__init = function(options) {
+        this[aesKeySymbol] = options.aesKey || 'bcore.has_psw'
     }
 
     /**
@@ -24,14 +22,15 @@ bcore.on('hashpsw', {
      * @param {String} password 明文密码
      * @return {String} 密文
      */
-    this.encrypt = async function (password) {
+    this.encrypt = async function(password) {
+
         //sha512
         let sha512Str = crypto.createHash('sha512').update(password).digest('hex')
 
         //bcrypt
         let bcryptedStr = await new Promise((resolve, reject) => {
 
-            bcrypt.genSalt(this.saltRounds, (err, salt) => {
+            bcrypt.genSalt(10, (err, salt) => {
 
                 if (err) return reject(err)
 
@@ -46,17 +45,25 @@ bcore.on('hashpsw', {
         })
 
         //aes-256-cbc
-        return encrypt(bcryptedStr, this.aesKey)
+        return encrypt(bcryptedStr, this[aesKeySymbol])
     }
 
-    this.compare = async function (password, cryptedPassword) {
+    /**
+     * 比较两个密码
+     *
+     * @param {String} password 明文密码
+     * @param {String} cryptedPassword 加密后的密码
+     *
+     * @return {Boolean} 是否为同一明文密码
+     */
+    this.compare = async function(password, cryptedPassword) {
 
         //sha512
         let sha512Str = crypto.createHash('sha512').update(password).digest('hex')
 
         //aes-256-cbc 解密
 
-        let bcryptedPassword = decrypt(cryptedPassword, this.aesKey)
+        let bcryptedPassword = decrypt(cryptedPassword, this[aesKeySymbol])
 
         let isMatch = await new Promise((resolve, reject) => {
             bcrypt.compare(sha512Str, bcryptedPassword, (err, res) => err ? reject(err) : resolve(res))
