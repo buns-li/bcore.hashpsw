@@ -1,53 +1,47 @@
-require('../index')
+require("../index");
 
-const MiniServer = require('bcore/lib/mini-server-center')
+const MiniServer = require("bcore/lib/mini-server-center");
 
-let psw = '12345678'
+let psw = "12345678";
 
 class HASHPSW {
-    constructor() {}
+  constructor() {}
 
-    getPropert() {
-        return this.msrv
-    }
+  getPropert() {
+    return this.msrv;
+  }
 
-    async test() {
+  async test() {
+    let hashedPassword = await this.msrv.hashpsw.encrypt(psw);
 
-        let hashedPassword = await this.msrv.hashpsw.encrypt(psw)
+    let isMatch = await this.msrv.hashpsw.compare(psw, hashedPassword);
 
-        let isMatch = await this.msrv.hashpsw.compare(psw, hashedPassword)
-
-        return isMatch
-    }
+    return isMatch;
+  }
 }
 
-let obj = new HASHPSW()
+let obj = new HASHPSW();
 
-require('should')
+require("should");
 
-describe('bcore.hashpsw', () => {
-    before((done) => {
-        MiniServer
-            .load('testApp', 'hashpsw', {
-                aesKey: 'buns.li'
-            })
-            .then(() => {
-                MiniServer.injection('testApp', obj)
-                done()
-            })
-    })
+describe("bcore.hashpsw", () => {
+  before(done => {
+    MiniServer.load("testApp", "hashpsw", {
+      aesKey: "buns.li"
+    }).then(() => {
+      MiniServer.injection("testApp", obj);
+      done();
+    });
+  });
 
-    it('should have property `hashpsw`', () => {
-        let properties = obj.getPropert()
+  it("should have property `hashpsw`", () => {
+    let properties = obj.getPropert();
+    properties.should.have.property("hashpsw");
+  });
 
-        properties.should.have.property('hashpsw')
-    })
-
-    it('should return true', () => {
-        obj
-            .test()
-            .then(data => {
-                data.should.be.ok()
-            })
-    })
-})
+  it("should return true", () => {
+    obj.test().then(data => {
+      data.should.be.ok();
+    });
+  });
+});
